@@ -17,6 +17,14 @@ interface CustomerChat {
   messages: ChatCompletionRequestMessage[]
   orderSummary?: string
 }
+const storeName = "Auroclin"
+const orderCode = "#sk-12345"
+
+const customerChat: ChatCompletionRequestMessage[]= [{
+role: "system",
+content: initPrompt(storeName, orderCode),
+}]
+
 
 async function completion(
   messages: ChatCompletionRequestMessage[]
@@ -24,22 +32,15 @@ async function completion(
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     temperature: 0,
-    max_tokens: 20, //256
+    max_tokens: 256, //256
     messages,
   })
 
   return completion.data.choices[0].message?.content
 }
-  const storeName = "Auroclin"
-  const orderCode = "#sk-12345"
-
-const customerChat: ChatCompletionRequestMessage[]= [{
-  role: "system",
-  content: initPrompt(storeName, orderCode),
-  }]
 
 create({
-  session: "auroclin-gpt",
+  session: "auroclin-gpt3",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
@@ -51,18 +52,20 @@ async function start(client: Whatsapp) {
 
   client.onMessage(async (message: Message) => {
     if (!message.body || message.isGroupMsg) return
-    console.log('message => ', message);
-    const response = (await completion([
-      {
-        role: "user",
-        content: message.body
-      }
-    ])) || "Não entendi..."
-try {
-  await client.sendText(message.from, response)
-  
-} catch (error) {
-  console.log("SACA --> ", error);
-}
+    console.log('message => ', message.body);
+    
+    customerChat.push({
+      role: 'user',
+      content: message.body,
+    })
+
+    const response = await completion(customerChat) || "Não entendi..."
+
+    customerChat.push({
+      role: 'assistant',
+      content: response,
+    })
+
+    await client.sendText(message.from, response)
   })
 }
