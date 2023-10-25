@@ -1,7 +1,7 @@
 import dotenv from "dotenv"
 
 dotenv.config()
-
+console.log("SACA A VARIAVEL --> ", process.env.OPENAI_API_KEY);
 export const config = {
   openAI: {
     apiToken: process.env.OPENAI_API_KEY,
