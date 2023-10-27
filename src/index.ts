@@ -42,26 +42,15 @@ async function completion(
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     temperature: 0,
-    max_tokens: 200, //256
+    max_tokens: 150, //256
     messages,
   })
 
   return completion.data.choices[0].message?.content
 }
 
-const chromiumArgs = [
-  '--disable-web-security', '--no-sandbox', '--disable-web-security',
-  '--aggressive-cache-discard', '--disable-cache', '--disable-application-cache',
-  '--disable-offline-load-stale-cache', '--disk-cache-size=0',
-  '--disable-background-networking', '--disable-default-apps', '--disable-extensions',
-  '--disable-sync', '--disable-translate', '--hide-scrollbars', '--metrics-recording-only',
-  '--mute-audio', '--no-first-run', '--safebrowsing-disable-auto-update',
-  '--ignore-certificate-errors', '--ignore-ssl-errors', '--ignore-certificate-errors-spki-list'
-];
-
-
 create({
-  session: "auroclin-gpt3",
+  session: "auroclin-gpt21",
   disableWelcome: true,
   browserArgs: chromiumArgs,
 })

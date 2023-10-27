@@ -1,7 +1,6 @@
 import dotenv from "dotenv"
 
 dotenv.config()
-
 export const config = {
   openAI: {
     apiToken: process.env.OPENAI_API_KEY,
