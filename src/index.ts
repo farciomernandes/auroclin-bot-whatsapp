@@ -54,9 +54,10 @@ create({
   })
 
 async function start(client: Whatsapp) {
-  const storeName = "Auroclin"
+  const orderCode = "Auroclin"
 
   client.onMessage(async (message: Message) => {
+    console.log('MENESAGEM NOVA -> ', message);
     return;
     //Remover a tarde
     if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
@@ -86,18 +87,13 @@ async function start(client: Whatsapp) {
           messages: [
             {
               role: "system",
-              content: initPrompt(storeName, orderCode),
+              content: initPrompt(orderCode),
             },
           ],
           orderSummary: "",
         }
 
   console.debug(customerPhone, "👤", message.body)
-
-  customerChat.messages.push({
-    role: "user",
-    content: message.body,
-  })
 
     customerChat.messages.push({
       role: 'user',
@@ -123,7 +119,7 @@ async function start(client: Whatsapp) {
       customerChat.messages.push({
         role: "user",
         content:
-          "Gere um resumo de pedido para registro no sistema da auroclin, quem está solicitando é um robô.",
+          "Gere um resumo do atendimento para registro no sistema da auroclin, quem está solicitando é um robô.",
       })
 
       const content =
