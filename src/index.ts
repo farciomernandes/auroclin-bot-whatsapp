@@ -57,6 +57,8 @@ async function start(client: Whatsapp) {
   const storeName = "Auroclin"
 
   client.onMessage(async (message: Message) => {
+    return;
+    //Remover a tarde
     if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
       return;
     }
