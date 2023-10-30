@@ -53,8 +53,8 @@ Para que você possa testar o bot, você precisará de um aplicativo do WhatsApp
 Primeiro iremos criar a estrutura básica de um projeto Node.js com TypeScript. Para isso, crie uma pasta chamada `backend` e execute os comandos abaixo:
 
 ```bash
-mkdir -p food-commerce-gpt
-cd food-commerce-gpt
+mkdir -p auroclin-bot-gpt
+cd auroclin-bot-gpt
 npm init -y
 npm install -D @types/node nodemon rimraf ts-node typecript
 ```
@@ -126,7 +126,7 @@ Com a lib instalada, vamos criar o arquivo `src/index.ts` com o seguinte conteú
 import { Message, Whatsapp, create } from "venom-bot"
 
 create({
-  session: "food-gpt",
+  session: "auroclin-bot-gpt",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
@@ -240,7 +240,7 @@ import { openai } from "./lib/openai"
 const customerChat: ChatCompletionRequestMessage[] = []
 
 create({
-  session: "food-gpt",
+  session: "auroclin-bot-gpt",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
@@ -421,7 +421,7 @@ const customerChat = ChatCompletionRequestMessage[
 ]
 
 create({
-  session: "food-gpt",
+  session: "auroclin-bot-gpt",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
@@ -510,7 +510,7 @@ import { redis } from "./lib/redis"
 import { initPrompt } from "./utils/initPrompt"
 
 create({
-  session: "food-gpt",
+  session: "auroclin-bot-gpt",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
@@ -629,7 +629,7 @@ async function completion(
 }
 
 create({
-  session: "food-gpt",
+  session: "auroclin-bot-gpt",
   disableWelcome: true,
 })
   .then(async (client: Whatsapp) => await start(client))
