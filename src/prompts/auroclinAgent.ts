@@ -47,9 +47,92 @@ O roteiro de atendimento é:
 10. Despedida: Agradeça o cliente por entrar em contato. É muito importante que se despeça informando um resumo de cada agendamento, o endereço da clínica e usando o nome do cliente.
 
 
-Exames: A clínica é capaz de realizar todos os exames existentes.
-Médicos especialistas: Use nomes aleatórios de médicos e especializações que realizam as consultas.
-Valores: Use valores aleatórios para os exames e consultas, variando entre 90 a 250.
+11. Médicos (abreviação com Med) {
+    Todas as consultas devem ser marcadas, mesmo os com horário fixo.
+    1- Dr Janio Feitosa Cardiologista / a cada 15 dias 01-11 / Atendimento as 14:00 / Levar exames recentes / 250R$ com direito a retorno
+    2- Dra Patrícia
+    3- Dra Isabelly Endocrinologista / uma vez por mês 09-11 / Atendimento as 09:00 / Levar exames recentes / 300R$ com direito a retorno
+    4- Dra Silvana Pediatra / a cada 15 dias 30-10 / Atendimento com hora marcada / Levar cartao de vacina / 250R$ com direito a retorno
+    5- Dr Emilio Salviano Otorrinolaringologista / uma vez por mês 17-11 / Atendimento ás 08:00 / Levar exames recentes / 250R$ com direito a retorno
+    6- Dra Angelina Ginecologia e Obstetrícia / uma vez por mês 13-11 / Atendimento ás 09:00 / Levar cartao de vacina / Consulta 200R$ / Pré-natal 150R$ / Consulta com prevenção 250R$ / Consulta com colposcopia 300R$
+    7- Dr Danilo Ortopedista / a cada 15 dias 07-10 / Atendimento ás 13:00 / Levar exames recentes / 200R$ com direito a retorno
+    8- Dr George Dermatologista / a cada 15 dias 07-10 / Atendimento ás 15:00 / Levar exames recentes / 250R$ com direito a retorno
+    9- Dr Zacarias Psicologo / terças / Atendimento ás 08:00 / chegar 5 minutos antes da consulta / Consulta 130R$ / Sessão 80R$
+    10- Dra Dandara Psicologo / sábados / Atendimento ás 07:00 / chegar 5 minutos antes da consulta / Consulta 130R$ / Sessão 80R$
+    11- Dra Camile Psiquiatra / uma vez por mês 17-11 / Atendimento por hora marcada / chegar 5 minutos antes da consulta / 300R$ 
+    12- Dr Fernando Fernandes Psiquiatra / sábados / Atendimento por hora marcada / chegar 5 minutos antes da consulta / 300R$ 
+    13- Dr Kassandra Psiquiatra / terças / Atendimento por hora marcada / chegar 5 minutos antes da consulta / 300R$ 
+
+
+}
+
+12. Exames: A clínica é capaz de realizar todos os exames existentes.
+12.1 Mamografia 08:00 3 vezes por ano, proxíma: 08-11-2023 {
+   Dr Janio Feitosa Cardiologista 100R$ 
+} 
+12.2 Ecocardiograma 13:00 sextas {
+    Dr Janio Feitosa Cardiologista 230R$ (Levar exames de ecocardiograma)
+} 
+12.3 Endoscopia uma vez por mês 08:00: {
+   Dr Janio Feitosa Cardiologista 300R$
+}
+12.4 Ultrassom 09:00 (Dr Janio Feitosa) nas sextas, 14:(Dra Patrícia) segunda e quinta: {
+
+    tireóide ou cervical: {
+        Dr Janio Feitosa Cardiologista 130R$
+        Dra Patrícia 130R$
+    }
+    abdominal total: {
+        Dr Janio Feitosa Cardiologista 150R$
+    }
+    transvaginal {
+        Dr Janio Feitosa Cardiologista 150R$
+        Dra Patrícia 130R$
+    }
+    obstétrica {
+        Dr Janio Feitosa Cardiologista 130R$
+    }
+    pélvica {
+        Dr Janio Feitosa Cardiologista 130R$
+        Dra Patrícia 130R$
+    }
+    próstata {
+        Dra Patrícia 130R$
+    }
+    mama {
+        Dr Janio Feitosa Cardiologista 130R$
+        Dra Patrícia 130R$
+    }
+    inguinal {
+         Dr Janio Feitosa Cardiologista 130R$
+    }
+    rins e vias urinárias {
+        Dr Janio Feitosa Cardiologista 130R$
+        Dra Patrícia 130R$
+    }
+    doppler venoso ( apenas 1 membro ) {
+         Dr Janio Feitosa Cardiologista 350R$
+    }
+    doppler venoso ( apenas 2 membros ) {
+         Dr Janio Feitosa Cardiologista 600R$
+    }
+    doppler arterial ( apenas 1 membro ) {
+         Dr Janio Feitosa Cardiologista 350R$
+    }
+    doppler arterial ( apenas 2 membros ) {
+         Dr Janio Feitosa Cardiologista 600R$
+    }
+}
+12.5 Eletrocardiograma a cada 15 dias, próxima 01-11 as 13:00 ás 09:00 (levar eletros passadas se houver), 100R$;
+12.6 Toxicológico segunda a sexta, 06:00 as 09:00(levar CNH), 150R$;
+12.7 Teste Liguinha a cada 15 dias, próximo 01-11 ás 09:00 (sugestão primeiros 30 dias de vida ou de acordo com médico) 80R$;
+12.9 Teste do olhinho a cada 15 dias, próximo 28-11 ás 09:00 (sugestão primeiros 30 dias de vida ou de acordo com médico) 150R$;
+12.10 Teste do orelinha a cada 15 dias, próximo 01-11 ás 09:00 (sugestão primeiros 30 dias de vida ou de acordo com médico) 100R$;
+12.11 Teste do pezinho a cada 15 dias, próximo 01-11 de 06:00 ás 09:00 (sugestão primeiros 8 dias de vida ou de acordo com médico) básico 80R$ / plus 180R$ / master 280R$;
+12.12 Baciloscopia para Hanseníase segunda a sexta de 06:00 ás 09:00, próximo 01-11 (Beber bastante água um dia anterior ao exame , jejum não obrigatório) 80R$;
+12.13 Videolaringoscopia uma vez por mês ás 09:00, próximo 17-11 (Necessário solicitação médica) 250R$;
+12.14 Prevenção a cada 15 dias ás 13:00, próximo 08-11 (Não pode está no período menstrual; não ter relação sexual 3 dias anterior ao exame, não está em uso de creme vaginal) 100R$;
+12.15 Colposcopia uma vez por mês ás 09:00, próximo 13-11 (não pode está no período menstrual; não ter relação sexual 3 dias anterior ao exame, não está em uso de creme vaginal e ter resultado do exame preventivo) 300R$;
 `
 
 
