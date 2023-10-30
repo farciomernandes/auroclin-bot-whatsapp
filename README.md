@@ -275,7 +275,7 @@ Para que o bot funcione, o modelo precisa de um contexto inicial:
 const customerChat = ChatCompletionRequestMessage[
   {
     role: "system",
-    content: "Você é uma assistente virtual de atendimento de uma pizzaria chamada Los Italianos. Você deve ser educada, atenciosa, amigável, cordial e muito paciente..."
+    content: "Você é uma assistente virtual de atendimento de um laboratório chamada Los Italianos. Você deve ser educada, atenciosa, amigável, cordial e muito paciente..."
   },
 ]
 ```
@@ -288,7 +288,7 @@ Se você perceber, além de conter o contexto inicial — 'Você é...' — aind
 
 Isso garante que o bot seja capaz de atender o cliente de forma mais natural possível, mas ainda seguir uma sequencia predefinida.
 
-E para inciar o bot com um contexto, iremos criar um arquivo [`src/prompts/pizzaAgent.ts`](./src/prompts/pizzaAgent.ts) com o seguinte conteúdo:
+E para inciar o bot com um contexto, iremos criar um arquivo [`src/prompts/auroclinAgent.ts`](./src/prompts/auroclinAgent.ts) com o seguinte conteúdo:
 
 ```ts
 export const prompt = `
@@ -430,16 +430,15 @@ O roteiro de atendimento é:
 
 ```
 
-Note que é um roteiro extremamente detalhado, para que possa atender a qualquer cliente de pizzaria. Você pode alterar o roteiro como quiser, mas lembre-se de que ele deve ser bem detalhado e sempre testado.
+Note que é um roteiro extremamente detalhado, para que possa atender a qualquer cliente da clínica. Você pode alterar o roteiro como quiser, mas lembre-se de que ele deve ser bem detalhado e sempre testado.
 
 E depois iremos criar a função no arquivo [`src/utils/initPrompt.ts`](./src//utils/initPrompt.ts) que carrega esse prompt e também possibilita ajustar alguns dados:
 
 ```ts
-import { prompt } from "../prompts/pizzaAgent"
+import { prompt } from "../prompts/auroclinAgent"
 
-export function initPrompt(storeName: string, orderCode: string): string {
+export function initPrompt(orderCode: string): string {
   return prompt
-    .replace(/{{[\s]?storeName[\s]?}}/g, storeName) // aqui é onde substituímos o nome da loja - {{ storeName }}
     .replace(/{{[\s]?orderCode[\s]?}}/g, orderCode) // aqui é onde substituímos o código do pedido - {{ orderCode }}
 }
 ```
@@ -454,13 +453,12 @@ import { openai } from "./lib/openai"
 
 import { initPrompt } from "./utils/initPrompt"
 
-const storeName = "Pizzaria Los Italianos"
 const orderCode = "#sk-123456"
 
 const customerChat = ChatCompletionRequestMessage[
   {
     role: "system",
-    content: initPrompt(storeName, orderCode), // Aqui é onde carregamos o prompt monstruoso com algumas informações como nome da loja e código. fique atendo a quantidade de texto do OpenAI
+    content: initPrompt(orderCode), // Aqui é onde carregamos o prompt monstruoso com algumas informações como nome da loja e código. fique atendo a quantidade de texto do OpenAI
   },
 ]
 
@@ -566,7 +564,6 @@ async function start(client: Whatsapp) {
   client.onMessage(async (message: Message) => {
     if (!message.body || message.isGroupMsg) return
 
-    const storeName = "Pizzaria Los Italianos"
 
     const customerPhone = `+${message.from.replace("@c.us", "")}`
     const customerName = message.author
@@ -581,7 +578,7 @@ async function start(client: Whatsapp) {
         : [
             {
               role: "system",
-              content: initPrompt(storeName, orderCode),
+              content: initPrompt(orderCode),
             }
           ]
 
@@ -682,7 +679,6 @@ create({
   })
 
 async function start(client: Whatsapp) {
-  const storeName = "Pizzaria Los Italianos"
 
   client.onMessage(async (message: Message) => {
     if (!message.body || message.isGroupMsg) return
@@ -708,7 +704,7 @@ async function start(client: Whatsapp) {
             messages: [
               {
                 role: "system",
-                content: initPrompt(storeName, orderCode),
+                content: initPrompt(orderCode),
               },
             ],
             orderSummary: "",
