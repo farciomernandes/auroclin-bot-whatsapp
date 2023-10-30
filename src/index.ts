@@ -44,7 +44,7 @@ async function completion(
 }
 
 create({
-  session: "auroclin-gpt21",
+  session: "auroclin-gpt-1-0",
   disableWelcome: true,
   browserArgs: chromiumArgs,
 })
