@@ -56,7 +56,7 @@ create({
 async function start(client: Whatsapp) {
 
   client.onMessage(async (message: Message) => {
-    console.log(message.body)
+
     //Ler todas as mensagens antigas e ignorar pro Gpt não ficar doido
     return;
     try {
@@ -71,6 +71,7 @@ async function start(client: Whatsapp) {
   
       // Busca no redis uma conversa existente
       const lastChat = JSON.parse((await redis.get(customerKey)) || "{}")
+  
   
       const customerChat: CustomerChat =
       lastChat?.status === "open"
