@@ -58,7 +58,7 @@ async function start(client: Whatsapp) {
   client.onMessage(async (message: Message) => {
 
     //Ler todas as mensagens antigas e ignox'rar pro Gpt não ficar doido
-    console.log('mensagem --> ', message);
+    console.log('mensagem --> ', message.body);
     return;
     try {
       if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
