@@ -36,7 +36,7 @@ async function completion(
   const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     temperature: 0,
-    max_tokens: 256, //256
+    max_tokens: 200, //256
     messages,
   })
 
@@ -54,83 +54,86 @@ create({
   })
 
 async function start(client: Whatsapp) {
-  const orderCode = "Auroclin"
 
   client.onMessage(async (message: Message) => {
-    console.log('MENESAGEM NOVA -> ', message);
+
+    //Ler todas as mensagens antigas e ignorar pro Gpt não ficar doido
     return;
-    //Remover a tarde
-    if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
-      return;
-    }
-
-    const customerPhone = `+${message.from.replace("@c.us", "")}`
-    const customerName = message.author
-    const customerKey = `customer:${customerPhone}:chat`
-    const orderCode = `#sk-${("00000" + Math.random()).slice(-5)}`
-
-    // Busca no redis uma conversa existente
-    const lastChat = JSON.parse((await redis.get(customerKey)) || "{}")
-
-
-    const customerChat: CustomerChat =
-    lastChat?.status === "open"
-      ? (lastChat as CustomerChat)
-      : {
-          status: "open",
-          orderCode,
-          chatAt: new Date().toISOString(),
-          customer: {
-            name: customerName,
-            phone: customerPhone,
-          },
-          messages: [
-            {
-              role: "system",
-              content: initPrompt(orderCode),
+    try {
+      if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
+        return;
+      }
+  
+      const customerPhone = `+${message.from.replace("@c.us", "")}`
+      const customerName = message.author
+      const customerKey = `customer:${customerPhone}:chat`
+      const orderCode = `#sk-${("00000" + Math.random()).slice(-5)}`
+  
+      // Busca no redis uma conversa existente
+      const lastChat = JSON.parse((await redis.get(customerKey)) || "{}")
+  
+  
+      const customerChat: CustomerChat =
+      lastChat?.status === "open"
+        ? (lastChat as CustomerChat)
+        : {
+            status: "open",
+            orderCode,
+            chatAt: new Date().toISOString(),
+            customer: {
+              name: customerName,
+              phone: customerPhone,
             },
-          ],
-          orderSummary: "",
-        }
-
-  console.debug(customerPhone, "👤", message.body)
-
-    customerChat.messages.push({
-      role: 'user',
-      content: message.body,
-    })
-
-    const content =
-    (await completion(customerChat.messages)) || "Não entendi..."
-
-    customerChat.messages.push({
-      role: "assistant",
-      content,
-    })
-
-    await client.sendText(message.from, content)
-
-    if (
-      customerChat.status === "open" &&
-      content.match(customerChat.orderCode)
-    ) {
-      customerChat.status = "closed"
-
+            messages: [
+              {
+                role: "system",
+                content: initPrompt(orderCode),
+              },
+            ],
+            orderSummary: "",
+          }
+  
+    console.debug(customerPhone, "👤", message.body)
+  
       customerChat.messages.push({
-        role: "user",
-        content:
-          "Gere um resumo do atendimento para registro no sistema da auroclin, quem está solicitando é um robô.",
+        role: 'user',
+        content: message.body,
       })
-
+  
       const content =
-        (await completion(customerChat.messages)) || "Não entendi..."
-
-      console.debug(customerPhone, "📦", content)
-
-      customerChat.orderSummary = content
+      (await completion(customerChat.messages)) || "Não entendi..."
+  
+      customerChat.messages.push({
+        role: "assistant",
+        content,
+      })
+  
+      await client.sendText(message.from, content)
+  
+      if (
+        customerChat.status === "open" &&
+        content.match(customerChat.orderCode)
+      ) {
+        customerChat.status = "closed"
+  
+        customerChat.messages.push({
+          role: "user",
+          content:
+            "Gere um resumo do atendimento para registro no sistema da auroclin, quem está solicitando é um robô.",
+        })
+  
+        const content =
+          (await completion(customerChat.messages)) || "Não entendi..."
+  
+        console.debug(customerPhone, "📦", content)
+  
+        customerChat.orderSummary = content
+      }
+  
+      redis.set(customerKey, JSON.stringify(customerChat))
+    } catch (error) {
+      await client.sendText(message.from, "Não entendi, aguarde um momento e repita sua última mensagem por favor.")
     }
-
-    redis.set(customerKey, JSON.stringify(customerChat))
 
   })
 }
