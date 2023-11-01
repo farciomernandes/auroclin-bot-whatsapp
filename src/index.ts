@@ -71,8 +71,6 @@ async function start(client: Whatsapp) {
   
       // Busca no redis uma conversa existente
       const lastChat = JSON.parse((await redis.get(customerKey)) || "{}")
-      console.log('orderCode = ', orderCode)
-
   
       const customerChat: CustomerChat =
       lastChat?.status === "open"
