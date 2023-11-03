@@ -15,6 +15,7 @@
     "typecript": "^0.0.1-security"
   },
   "dependencies": {
+    "date-fns": "^2.30.0",
     "dotenv": "^16.0.3",
     "ioredis": "^5.3.2",
     "openai": "^3.2.1",
