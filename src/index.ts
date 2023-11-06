@@ -19,7 +19,7 @@ interface CustomerChat {
   }
   messages: ChatCompletionRequestMessage[]
   orderSummary?: string
-  isDisabledData: string;
+  isDisabledData: string | null;
 }
 
 const chromiumArgs = [
@@ -66,10 +66,8 @@ async function start(client: Whatsapp) {
     const orderCode = cellPhone.slice(0, -5);
     const customerPhone = `+${message.from.replace("@c.us", "")}`
     const customerKey = `customer:${customerPhone}:chat`
-    const tempoDeExpiracaoEmSegundos = 24 * 60 * 60; // 24 horas em segundos
+    const tempoDeExpiracaoEmSegundos = 3 * 60 * 60; // 3 horas em segundos
 
-
-    return;
     try {
     
       if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
@@ -100,18 +98,21 @@ async function start(client: Whatsapp) {
               },
             ],
             orderSummary: "",
-            isDisabledData: dataAtual.toISOString(),
+            isDisabledData: null,
           }
 
-          //Verifica se a cponversa está dentro do prazo que deve estar pausada para o bot
-          const isDataPassada = isBefore(
-            parseISO(customerChat.isDisabledData),
-            dataAtual
-          );
-    
-          if (!isDataPassada) {
-            return
+          //Verifica se a conversa está dentro do prazo que deve estar pausada para o bot
+          if(customerChat.isDisabledData){
+            const isDataPassada = isBefore(
+              parseISO(customerChat.isDisabledData),
+              dataAtual
+            );
+            if (!isDataPassada) {
+              return
+            }
+
           }
+         
       console.debug(customerPhone, "👤", message.body)
   
       customerChat.messages.push({
@@ -158,7 +159,6 @@ async function start(client: Whatsapp) {
 
         // Adiciona 3 horas à data e hora atual para que o bot ignore essa conversa
         customerChat.isDisabledData = addHours(dataAtual, 3).toISOString();
-
         redis.set(customerKey, JSON.stringify(customerChat))
         redis.expire(customerKey, tempoDeExpiracaoEmSegundos);
 
