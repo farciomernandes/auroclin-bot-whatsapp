@@ -59,7 +59,7 @@ create({
   function opened(){
     const now = new Date(); // Obtém a data e hora atual
   
-    const startMorning = setHours(setMinutes(startOfDay(now), 6), 0); // 06:00 da manhã
+    const startMorning = setHours(setMinutes(startOfDay(now), 7), 0); // 06:00 da manhã
     const endMorning = setHours(setMinutes(startOfDay(now), 12), 0);  // 12:00 do meio-dia
     const startAfternoon = setHours(setMinutes(startOfDay(now), 14), 0); // 14:00 da tarde
     const endAfternoon = setHours(setMinutes(startOfDay(now), 17), 0);  // 17:00 da tarde
