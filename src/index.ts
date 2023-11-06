@@ -88,9 +88,7 @@ async function start(client: Whatsapp) {
     const tempoDeExpiracaoEmSegundos = 3 * 60 * 60; // 3 horas em segundos
     const isOpened = opened();
     console.log('opened: ', isOpened);
-    if(!isOpened){
-      return;
-    }
+
     try {
     
       if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
