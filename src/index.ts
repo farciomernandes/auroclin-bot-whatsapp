@@ -3,7 +3,7 @@ import { Message, Whatsapp, create } from "venom-bot"
 import { openai } from "./lib/openai"
 import { initPrompt } from "./utils/initPrompt"
 import { redis } from "./lib/redis"
-import { addHours, format, isAfter, isBefore, parseISO } from "date-fns"
+import { addHours, format, isAfter, isBefore, isToday, isWithinInterval, parseISO, setHours, setMinutes, startOfDay, subHours } from "date-fns"
 
 const formatoDesejado = 'dd:MM:yy HH:mm:ss';
 
@@ -19,7 +19,7 @@ interface CustomerChat {
   }
   messages: ChatCompletionRequestMessage[]
   orderSummary?: string
-  isDisabledData: string | null;
+  isDisabledData: string;
 }
 
 const chromiumArgs = [
@@ -56,6 +56,24 @@ create({
     console.log(err)
   })
 
+  function opened(){
+    const now = new Date(); // Obtém a data e hora atual
+  
+    const startMorning = setHours(setMinutes(startOfDay(now), 6), 0); // 06:00 da manhã
+    const endMorning = setHours(setMinutes(startOfDay(now), 12), 0);  // 12:00 do meio-dia
+    const startAfternoon = setHours(setMinutes(startOfDay(now), 14), 0); // 14:00 da tarde
+    const endAfternoon = setHours(setMinutes(startOfDay(now), 17), 0);  // 17:00 da tarde
+  
+    if (
+      (isToday(now) && isWithinInterval(now, { start: startMorning, end: endMorning })) ||
+      (isToday(now) && isWithinInterval(now, { start: startAfternoon, end: endAfternoon }))
+    ) {
+      return true;
+    } else {
+      return false
+    }
+  }
+  
 async function start(client: Whatsapp) {
 
   client.onMessage(async (message: Message) => {
@@ -67,7 +85,10 @@ async function start(client: Whatsapp) {
     const customerPhone = `+${message.from.replace("@c.us", "")}`
     const customerKey = `customer:${customerPhone}:chat`
     const tempoDeExpiracaoEmSegundos = 3 * 60 * 60; // 3 horas em segundos
-
+    const isOpened = opened();
+    if(!isOpened){
+      return;
+    }
     try {
     
       if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
@@ -98,20 +119,17 @@ async function start(client: Whatsapp) {
               },
             ],
             orderSummary: "",
-            isDisabledData: null,
+            isDisabledData: format(subHours(dataAtual, 6), "yyyy-MM-dd'T'HH:mm:ss"),
           }
 
           //Verifica se a conversa está dentro do prazo que deve estar pausada para o bot
-          if(customerChat.isDisabledData){
             const isDataPassada = isBefore(
               parseISO(customerChat.isDisabledData),
               dataAtual
             );
-            if (!isDataPassada) {
+            if (isDataPassada) {
               return
             }
-
-          }
          
       console.debug(customerPhone, "👤", message.body)
   
@@ -193,3 +211,5 @@ async function start(client: Whatsapp) {
     }
   })
 }
+
+
