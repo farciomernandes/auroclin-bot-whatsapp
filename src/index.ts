@@ -85,9 +85,7 @@ async function saveCustomerChat(
   const { isIgnore, dataAtual } = shouldIgnoreMessages();
 
   try {
-    if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
-      return
-    }
+    
     console.log('mensagem --> ', message.body)
 
     if (isIgnore) {
@@ -198,6 +196,11 @@ create({
 })
   .then(async (client: Whatsapp) => {
     client.onMessage(async (message: Message) => {
+
+      if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
+        return
+      }
+      
       const customerName = message.author
       const orderCode = message.sender.id.slice(0, -5)
       await saveCustomerChat(client, message, customerName, orderCode)
