@@ -6,7 +6,6 @@ import {
   addHours,
   format,
   isBefore,
-  isToday,
   isWithinInterval,
   setHours,
   setMinutes,
@@ -14,10 +13,8 @@ import {
   subHours,
 } from "date-fns"
 import { initPrompt } from "./utils/initPrompt"
-import { zonedTimeToUtc } from "date-fns-tz"
 
 const formatoDesejado = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX"
-const timeZone = 'America/Sao_Paulo';
 
 
 interface CustomerChat {
@@ -30,7 +27,7 @@ interface CustomerChat {
   }
   messages: ChatCompletionRequestMessage[]
   orderSummary?: string
-  isDisabledData: string
+  isDisabledData: any
 }
 
 const chromiumArgs = [
@@ -64,20 +61,15 @@ function shouldIgnoreMessages(): any {
   const endMorning = setHours(setMinutes(startOfDay(now), 12), 0);
   const startAfternoon = setHours(setMinutes(startOfDay(now), 14), 0);
   const endAfternoon = setHours(setMinutes(startOfDay(now), 17), 0);
-  console.log('startMorning ', startMorning)
-  console.log('endMorning ', endMorning)
-  console.log('startAfternoon ', startAfternoon)
-  console.log('endAfternoon ', endAfternoon)
-  console.log('startAfternoon ', startAfternoon)
   const isIgnore = (
     isWithinInterval(now, { start: startMorning, end: endMorning }) ||
     isWithinInterval(now, { start: startAfternoon, end: endAfternoon })
   )
 
-return {
-  isIgnore,
-  dataAtual: now
-};
+  return {
+    isIgnore,
+    dataAtual: now
+  };
 }
 
 async function saveCustomerChat(
@@ -91,11 +83,12 @@ async function saveCustomerChat(
   const customerKey = `customer:${customerPhone}:chat`
   const tempoDeExpiracaoEmSegundos = 3 * 60 * 60
   const { isIgnore, dataAtual } = shouldIgnoreMessages();
-  console.log('data atual: ', dataAtual);
+
   try {
     if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
       return
     }
+    console.log('mensagem --> ', message.body)
 
     if (isIgnore) {
       console.log('Mensagens sendo ignoradas devido ao horário.')
@@ -126,9 +119,7 @@ async function saveCustomerChat(
       }
 
     // Verifica se a conversa está dentro do prazo que deve estar pausada para o bot
-    const isDataPassada = isBefore(new Date(customerChat.isDisabledData), dataAtual)
-    console.log('new Date(customerChat.isDisabledData), timeZone) ', new Date(customerChat.isDisabledData), timeZone);
-    console.log('isDataPassada ', isDataPassada);
+    const isDataPassada = isBefore(dataAtual, new Date(customerChat.isDisabledData));
 
     if (isDataPassada) {
       console.log('Mensagens sendo ignoradas devido ao período de pausa.')
@@ -155,7 +146,6 @@ async function saveCustomerChat(
 
     // Caso seja enviado um orderCode, encerra o contexto e pede para um atendente continuar
     if (content.match(customerChat.orderCode) || content.match('Agendei') || content.match('Agendado') || content.match('agendei') || content.match('agendado')) {
-      customerChat.status = "closed"
 
       customerChat.messages.push({
         role: "user",
@@ -172,8 +162,7 @@ async function saveCustomerChat(
       await client.sendText('120363197087635017@g.us', summaryContent)
 
       // Adiciona 3 horas à data e hora atual para que o bot ignore essa conversa
-      customerChat.isDisabledData = format(addHours(dataAtual, 3), formatoDesejado)
-      customerChat.status = "closed"
+      customerChat.isDisabledData = addHours(dataAtual, 3)
 
       redis.set(customerKey, JSON.stringify(customerChat))
       redis.expire(customerKey, tempoDeExpiracaoEmSegundos)
@@ -185,18 +174,15 @@ async function saveCustomerChat(
   } catch (error) {
     let customerChat = JSON.parse((await redis.get(customerKey)) || "{}")
 
-    const content = `Olá, houve um erro no atendimento ao cliente ${orderCode}, alguma uma atendente para se comunicar com ele!`
+    const content = `*Olá, houve um erro no atendimento ao cliente ${orderCode}, alguma uma atendente para se comunicar com ele!*`
 
     // Adiciona 6 horas à data e hora atual
     const dataHoraFormatada = addHours(dataAtual, 3)
 
-    await client.sendText('5583981613615@g.us', content)
-
-    const dataHoraFormatadaString = format(dataHoraFormatada, formatoDesejado)
+    await client.sendText('120363197087635017@g.us', content)
 
     // Seta o novo período de tempo que o bot deve ignorar a conversa
-    customerChat.isDisabledData = dataHoraFormatadaString
-    customerChat.status = "closed"
+    customerChat.isDisabledData = dataHoraFormatada;
 
     redis.set(customerKey, JSON.stringify(customerChat))
     redis.expire(customerKey, tempoDeExpiracaoEmSegundos)
@@ -212,7 +198,6 @@ create({
 })
   .then(async (client: Whatsapp) => {
     client.onMessage(async (message: Message) => {
-      console.log('mensagem --> ', message.body)
       const customerName = message.author
       const orderCode = message.sender.id.slice(0, -5)
       await saveCustomerChat(client, message, customerName, orderCode)
