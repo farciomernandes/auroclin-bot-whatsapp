@@ -195,6 +195,8 @@ create({
 })
   .then(async (client: Whatsapp) => {
     client.onMessage(async (message: Message) => {
+      console.log(message.body);
+      return;
 
       if (!message.body || message.isGroupMsg || message.mimetype === "audio" || message.type !== "chat" || message.from == "status@broadcast") {
         return
