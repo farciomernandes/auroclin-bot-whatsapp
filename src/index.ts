@@ -78,7 +78,6 @@ async function saveCustomerChat(
   customerName: string,
   orderCode: string
 ) {
-  const cellPhone = message.sender.id
   const customerPhone = `+${message.from.replace("@c.us", "")}`
   const customerKey = `customer:${customerPhone}:chat`
   const tempoDeExpiracaoEmSegundos = 3 * 60 * 60
